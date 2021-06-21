@@ -5,8 +5,10 @@ import {authService} from '../fBase';
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [newAccount, setNewAccount] = useState(false);
+  const [newAccount, setNewAccount] = useState(true);
   // 새로 가입 state 작성
+
+  const [error, setError] = useState('');
 
   const onChange =(event) => {
     const {target:{name, value}} = event;
@@ -35,8 +37,12 @@ const Auth = () => {
       }
       console.log(data);
     } catch(error) {
-      console.log(error);
+      setError(error.message);
     }
+  }
+
+  const toggleAccount = () => { setNewAccount(prev => !prev);
+
   }
   return (
     <div>
@@ -59,7 +65,10 @@ const Auth = () => {
         />
         <input type="submit" value={newAccount ? 'Create Account' : 'Log in'} />
       </form>
-
+      {error}
+      <span onClick={toggleAccount}>
+        {newAccount ? 'Sign in' : 'Create Account'}
+      </span>
       <div>
         <button>Continue with Google</button>
         <button>Continue with Github</button>

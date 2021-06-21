@@ -1,26 +1,37 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppRouter from './Router';
 import {authService} from '../fBase';
-// 상대 경로를 이용해 firebase.js 파일을 임포트
-// fBase.js 에서 export const 사용,
-// 원하는 서비스만 따로 불러올 수 있도록 지정함.
 
 function App() {
-  // const auth = firebase.auth();
-  // auth를 이렇게 임포트 할 수도 있고 fBase.js 파일 수정해도 됨
-
-  const [isLoggedIn, setIsLoggedIn] = useState(authService.currentUser);
+  const [init, setInit] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   // firebase auth와 state 연동
-  return <>
-    <AppRouter isLoggedIn = {isLoggedIn}/>
+
+  useEffect(() => {
+    authService.onAuthStateChanged((user) => {
+      console.log(user);
+      // onAuthStateChanged : 사용자가 생겼는지 일종의 이벤트리스너
+      // 상태가 변경되면 user 정보를 콘솔에 찍는다.
+
+      if(user) {
+        setIsLoggedIn(true);
+        
+      } else {
+        setIsLoggedIn(false);
+      }
+      setInit(true);
+    });
+    
+  },[]);
+  return (
+    <>
+    {init ? <AppRouter isLoggedIn = {isLoggedIn} />: 'initializing...'}
     <footer>test</footer>
-  </>;
+  </>
+  );
 }
 
-// 하단의 footer 등 다른 요소를 조합할 수 있게 하기 위해
-// AppRouter 따로 분리해서 사용
-// App.js에서 로직 관리할 수 있도록
 
 
 
