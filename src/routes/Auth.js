@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
+// useState 경고 뜨지 않게 같이 import
+import {authService} from '../fBase';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [newAccount, setNewAccount] = useState(false);
+  // 새로 가입 state 작성
 
   const onChange =(event) => {
     const {target:{name, value}} = event;
@@ -15,9 +19,24 @@ const Auth = () => {
     }
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = async(event) => {
     event.preventDefault();
     // 새로고침 금지
+
+    try {
+      let data;
+      if(newAccount) {
+        // create account
+        data = await authService.createUserWithEmailAndPassword(email, password);
+        
+      } else {
+        // log in
+        data = await authService.signInWithEmailAndPassword(email, password);
+      }
+      console.log(data);
+    } catch(error) {
+      console.log(error);
+    }
   }
   return (
     <div>
@@ -38,7 +57,7 @@ const Auth = () => {
           value={password}
           onChange={onChange}
         />
-        <input type="submit" value="Log In" />
+        <input type="submit" value={newAccount ? 'Create Account' : 'Log in'} />
       </form>
 
       <div>
