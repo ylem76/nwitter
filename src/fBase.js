@@ -1,8 +1,8 @@
 import firebase from "firebase/app";
 import "firebase/auth";
+import "firebase/database";
 
-// firebase & auth 임포트
-// import * as firebase from "firebase"; 구버전
+// firebase/database 임포트
 
 
 
