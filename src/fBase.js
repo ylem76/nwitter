@@ -1,6 +1,9 @@
 import firebase from "firebase/app";
-// firebase 임포트
+import "firebase/auth";
+
+// firebase & auth 임포트
 // import * as firebase from "firebase"; 구버전
+
 
 
 const firebaseConfig = {
@@ -12,8 +15,9 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_APP_ID
 };
 
+firebase.initializeApp(firebaseConfig);
 
-export default firebase.initializeApp(firebaseConfig);
+export const authService = firebase.auth();
 
 
 

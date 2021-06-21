@@ -20,4 +20,8 @@ const AppRouter = ({isLoggedIn}) => {
   )
 }
 
+// <> </> 빈꺽쇠 : fragment
+// 여러 가지 요소를 한 페이지에서 렌더링 하고 싶은데,
+// html 요소로 묶기는 싫을 때 사용
+
 export default AppRouter;
