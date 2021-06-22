@@ -14,8 +14,6 @@ const Nweet = ({nweetObj, isOwner}) => {
       // not delete
 
     }
-    console.log(ok);
-
   };
   const toggleEditing = () => setEditing((prev) => !prev);
   const onSubmit = async (event) => {
