@@ -5,7 +5,6 @@ import {authService} from '../fBase';
 
 function App() {
   const [init, setInit] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userObj, setUserObj] = useState(null);
 
   useEffect(() => {
@@ -15,11 +14,11 @@ function App() {
       // 상태가 변경되면 user 정보를 콘솔에 찍는다.
 
       if(user) {
-        setIsLoggedIn(true);
+        Boolean(userObj);
         setUserObj(user);
         
       } else {
-        setIsLoggedIn(false);
+        Boolean(!userObj);
       }
       setInit(true);
     });
@@ -27,7 +26,7 @@ function App() {
   },[]);
   return (
     <>
-    {init ? <AppRouter isLoggedIn = {isLoggedIn} userObj={userObj} />: 'initializing...'}
+    {init ? <AppRouter isLoggedIn = {Boolean(userObj)} userObj={userObj} />: 'initializing...'}
     <footer>test</footer>
   </>
   );
