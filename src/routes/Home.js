@@ -1,46 +1,43 @@
 import React, { useEffect, useState } from 'react'
 import { dbService } from '../fBase';
 
-const Home = () =>{
+const Home = ({userObj}) =>{
   const [nweet, setNweet] = useState('');
   const [nweets, setNweets] = useState([]);
-  const getNweets = async() => {
-    const dbNweets = await dbService.collection('nweets').get();
-    // get(); querySnapshot을 리턴함.
-    // 원하는 데이터를 뽑아 쓰려면 아래와 같이 data() 메서드 사용해서 작성
-    // dbNweets.forEach((document) => console.log(document.data()));
 
-    dbNweets.forEach((document) => {
-      const nweetObject = {
-        ...document.data(), // 스프레드 연산자, 데이터를 가져옴
-        id: document.id,
-      }
+  // const getNweets = async() => {
+  //   const dbNweets = await dbService.collection('nweets').get();
+  //   dbNweets.forEach((document) => {
+  //     const nweetObject = {
+  //       ...document.data(), // 스프레드 연산자, 데이터를 가져옴
+  //       id: document.id,
+  //     }
+  //     setNweets((prev) => [document.data(), ...prev]);
+  //   });
+  // };
 
-      // dbNweets의 Nweet 개별 document의 데이터를 이용하여 오브젝트 만들기
-
-
-      setNweets((prev) => [document.data(), ...prev]);
-      // set이 붙는 함수를 쓸 때 값 대신에 함수를 전달할 수 있음.
-      // 함수를 전달하면 리액트는 이전 값에 접근할 수 있게 해줌.
-      // 잘 모르겠는데 하여튼 배열을 리턴한다는 뜻 같음.
-
-      // ...prev 값 위에 최근 값 가져옴...
-      // 리액트 state의 set의 특성 같음.
-    });
-  };
   useEffect(()=>{
-    getNweets();
+    dbService.collection('nweets').orderBy("createdAt","desc").onSnapshot(snapshot => {
+
+      const nweetArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log(nweetArray);
+      setNweets(nweetArray)
+
+    })
+    // db에서 뭔가 일어나면 실행
+    // read, del, update, create 모두 포함
+    
   }, []);
+
   const onSubmit = async(event) => {
     event.preventDefault();
     await dbService.collection('nweets').add({
-      // firestore.collection('nweets 콜렉션')에
-      // nweet을 추가
-      nweet,
-      // key(=nweet) : value(nweet = input value)
-      // 축약해서 nweet
-
+      text:nweet,
       createdAt:Date.now(),
+      creatorId:userObj.uid,
     });
     setNweet('');
   };
@@ -50,7 +47,6 @@ const Home = () =>{
     } = event;
     setNweet(value);
   };
-  // console.log(nweets);
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -60,7 +56,7 @@ const Home = () =>{
       <div>
         {nweets.map(nweet => (
           <div key={nweet.id}>
-          <h4>{nweet.nweet}</h4>
+          <h4>{nweet.text}</h4>
         </div>
         ))}
       </div>
