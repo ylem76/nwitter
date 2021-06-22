@@ -5,17 +5,7 @@ import Nweet from '../components/Nweet'
 const Home = ({userObj}) =>{
   const [nweet, setNweet] = useState('');
   const [nweets, setNweets] = useState([]);
-
-  // const getNweets = async() => {
-  //   const dbNweets = await dbService.collection('nweets').get();
-  //   dbNweets.forEach((document) => {
-  //     const nweetObject = {
-  //       ...document.data(), // 스프레드 연산자, 데이터를 가져옴
-  //       id: document.id,
-  //     }
-  //     setNweets((prev) => [document.data(), ...prev]);
-  //   });
-  // };
+  const [attachment, setAttachment] = useState();
 
   useEffect(()=>{
     dbService.collection('nweets').orderBy("createdAt","desc").onSnapshot(snapshot => {
@@ -57,9 +47,15 @@ const Home = ({userObj}) =>{
 
     const reader = new FileReader();
     reader.onloadend = (finishedEvent) => {
-      console.log(finishedEvent)
+      const {currentTarget : {result}} = finishedEvent;
+      setAttachment(result)
     }
     reader.readAsDataURL(theFile);
+  }
+
+  const onClearAttachment = (event) => {
+    event.preventDefault();
+    setAttachment(null);
   }
   return (
     <div>
@@ -67,6 +63,14 @@ const Home = ({userObj}) =>{
         <input value={nweet} onChange={onChange} type="text" placeholder="What's on your mind?" maxLength={120} />
         <input type="file" accept="image/*" onChange={onFileChange} />
         <input type="submit" value="nweet" />
+        {attachment &&
+          <>
+            <div>
+              <img src={attachment} width="50px"/>
+              <button onClick={onClearAttachment}>Clear image</button>
+            </div>
+          </>
+        }
       </form>
       <div>
         {nweets.map(nweet => (
