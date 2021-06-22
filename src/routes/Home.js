@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { dbService } from '../fBase';
+import { v4 as uuidv4 } from 'uuid';
+import { dbService, storageService } from '../fBase';
 import Nweet from '../components/Nweet'
 
 const Home = ({userObj}) =>{
@@ -25,12 +26,20 @@ const Home = ({userObj}) =>{
 
   const onSubmit = async(event) => {
     event.preventDefault();
-    await dbService.collection('nweets').add({
-      text:nweet,
-      createdAt:Date.now(),
-      creatorId:userObj.uid,
-    });
-    setNweet('');
+    const fileRef = storageService.ref().child(`${userObj.uid}/${uuidv4()}`);
+    // child : 기본적으로 이미지의 path
+    // 먼저 파일이 업로드 될 레퍼런스(자리)를 만들고
+    // 데이터를 putString으로 업로드
+
+    const response = await fileRef.putString(attachment, 'data_url');
+    console.log(response);
+
+    // await dbService.collection('nweets').add({
+    //   text:nweet,
+    //   createdAt:Date.now(),
+    //   creatorId:userObj.uid,
+    // });
+    // setNweet('');
   };
   const onChange = (event) => {
     const{
@@ -57,6 +66,7 @@ const Home = ({userObj}) =>{
     event.preventDefault();
     setAttachment(null);
   }
+
   return (
     <div>
       <form onSubmit={onSubmit}>
