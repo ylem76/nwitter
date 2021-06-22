@@ -7,7 +7,7 @@ import Profile from '../routes/Profile';
 
 import Navigation from './Navigation';
 
-const AppRouter = ({isLoggedIn, userObj}) => {
+const AppRouter = ({refreshUser, isLoggedIn, userObj}) => {
   
   return(
     <Router>
@@ -16,7 +16,7 @@ const AppRouter = ({isLoggedIn, userObj}) => {
         {isLoggedIn 
           ? <>
             <Route exact path='/'><Home userObj={userObj} /></Route>
-            <Route exact path='/profile'><Profile userObj={userObj} /></Route>
+            <Route exact path='/profile'><Profile userObj={userObj} refreshUser={refreshUser} /></Route>
           </>
           : <>
             <Route exact path='/'><Auth /></Route>
