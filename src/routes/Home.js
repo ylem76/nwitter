@@ -1,89 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid';
-import { dbService, storageService } from '../fBase';
+import { dbService } from '../fBase';
 import Nweet from '../components/Nweet'
+import NweetFactory from '../components/nweetFactory';
 
 const Home = ({userObj}) =>{
-  const [nweet, setNweet] = useState('');
+  
   const [nweets, setNweets] = useState([]);
-  const [attachment, setAttachment] = useState('');
 
-  useEffect(()=>{
+  useEffect(() => {
     dbService.collection('nweets').orderBy("createdAt","desc").onSnapshot(snapshot => {
-
       const nweetArray = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
       console.log(nweetArray);
       setNweets(nweetArray)
-
     })
-    // db에서 뭔가 일어나면 실행
-    // read, del, update, create 모두 포함
-    
   }, []);
-
-  const onSubmit = async(event) => {
-    event.preventDefault();
-    let attachmentUrl = '';
-    if(attachment !== '') {
-      const attachmentRef = storageService.ref().child(`${userObj.uid}/${uuidv4()}`);
-      const response = await attachmentRef.putString(attachment, 'data_url');
-      attachmentUrl = await response.ref.getDownloadURL();
-    }
-    const nweetObj = {
-      text:nweet,
-      createdAt:Date.now(),
-      creatorId:userObj.uid,
-      attachmentUrl
-    };
-    await dbService.collection('nweets').add(nweetObj);
-    setAttachment('');
-    setNweet('');
-    
-  };
-  const onChange = (event) => {
-    const{
-      target:{ value },
-    } = event;
-    setNweet(value);
-  };
-  const onFileChange = (event) => {
-    const {target:{ files },}= event;
-    const theFile = files[0];
-    
-    // input onChange 감지, event에서 파일 정보 가져옴
-    // fileReaderAPI로 파일을 읽어옴
-
-    const reader = new FileReader();
-    reader.onloadend = (finishedEvent) => {
-      const {currentTarget : {result}} = finishedEvent;
-      setAttachment(result)
-    }
-    reader.readAsDataURL(theFile);
-  }
-
-  const onClearAttachment = (event) => {
-    event.preventDefault();
-    setAttachment(null);
-  }
 
   return (
     <div>
-      <form onSubmit={onSubmit}>
-        <input value={nweet} onChange={onChange} type="text" placeholder="What's on your mind?" maxLength={120} />
-        <input type="file" accept="image/*" onChange={onFileChange} />
-        <input type="submit" value="nweet" />
-        {attachment &&
-          <>
-            <div>
-              <img src={attachment} width="50px"/>
-              <button onClick={onClearAttachment}>Clear image</button>
-            </div>
-          </>
-        }
-      </form>
+      <NweetFactory userObj={userObj} />
       <div>
         {nweets.map(nweet => (
           <Nweet
@@ -96,6 +33,5 @@ const Home = ({userObj}) =>{
     </div>
   );
 }
-// state의 nweets에서 nweet정보 가져옴.
 
 export default Home;
